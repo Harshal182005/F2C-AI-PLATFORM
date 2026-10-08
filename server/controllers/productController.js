@@ -33,6 +33,8 @@ const uploadToCloudinary = (fileBuffer) => {
 
 export const addProduct = async (req, res) => {
     try {
+        console.log("FILES RECEIVED:", req.files);
+        console.log("BODY RECEIVED:", req.body);
         const {
             name,
             category,

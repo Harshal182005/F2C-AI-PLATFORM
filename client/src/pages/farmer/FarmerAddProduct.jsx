@@ -14,7 +14,6 @@ import {
     IndianRupee,
     Leaf,
     Boxes,
-    FileText,
     ChevronDown,
     WandSparkles
 } from "lucide-react";
@@ -24,12 +23,6 @@ import API from "../../services/api";
 // ==========================================
 // CONSTANTS
 // ==========================================
-
-const CLOUDINARY_CLOUD_NAME =
-    import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-
-const CLOUDINARY_UPLOAD_PRESET =
-    import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
 const MAX_IMAGES = 5;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -221,68 +214,6 @@ const FarmerAddProduct = () => {
     };
 
     // ==========================================
-    // CLOUDINARY UPLOAD
-    // ==========================================
-
-    const uploadImagesToCloudinary = async () => {
-        if (!selectedImages.length) {
-            return [];
-        }
-
-        if (
-            !CLOUDINARY_CLOUD_NAME ||
-            !CLOUDINARY_UPLOAD_PRESET
-        ) {
-            throw new Error(
-                "Cloudinary configuration is missing. Check your frontend .env file."
-            );
-        }
-
-        setUploadingImages(true);
-
-        try {
-            const uploadedUrls = [];
-
-            for (const image of selectedImages) {
-                const data = new FormData();
-
-                data.append("file", image);
-
-                data.append(
-                    "upload_preset",
-                    CLOUDINARY_UPLOAD_PRESET
-                );
-
-                const response = await fetch(
-                    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-                    {
-                        method: "POST",
-                        body: data
-                    }
-                );
-
-                const result =
-                    await response.json();
-
-                if (!response.ok) {
-                    throw new Error(
-                        result.error?.message ||
-                        "Failed to upload image."
-                    );
-                }
-
-                uploadedUrls.push(
-                    result.secure_url
-                );
-            }
-
-            return uploadedUrls;
-        } finally {
-            setUploadingImages(false);
-        }
-    };
-
-    // ==========================================
     // VALIDATION
     // ==========================================
 
@@ -454,11 +385,66 @@ const FarmerAddProduct = () => {
             }
 
             // ==================================
-            // UPLOAD IMAGES
+            // CREATE MULTIPART FORM DATA
             // ==================================
 
-            const imageUrls =
-                await uploadImagesToCloudinary();
+            const data = new FormData();
+
+            data.append(
+                "name",
+                formData.name.trim()
+            );
+
+            data.append(
+                "category",
+                formData.category
+            );
+
+            data.append(
+                "description",
+                formData.description.trim()
+            );
+
+            data.append(
+                "price",
+                String(Number(formData.price))
+            );
+
+            data.append(
+                "quantity",
+                String(Number(formData.quantity))
+            );
+
+            data.append(
+                "unit",
+                formData.unit
+            );
+
+            data.append(
+                "location",
+                formData.location.trim()
+            );
+
+            data.append(
+                "isOrganic",
+                String(formData.isOrganic)
+            );
+
+            data.append(
+                "isAvailable",
+                "true"
+            );
+
+            // ==================================
+            // ADD IMAGE FILES
+            // ==================================
+
+            for (const image of selectedImages) {
+                data.append(
+                    "images",
+                    image
+                );
+            }
 
             // ==================================
             // CREATE PRODUCT
@@ -466,37 +452,7 @@ const FarmerAddProduct = () => {
 
             const response = await API.post(
                 "/products",
-                {
-                    name:
-                        formData.name.trim(),
-
-                    category:
-                        formData.category,
-
-                    description:
-                        formData.description.trim(),
-
-                    price:
-                        Number(formData.price),
-
-                    quantity:
-                        Number(formData.quantity),
-
-                    unit:
-                        formData.unit,
-
-                    images:
-                        imageUrls,
-
-                    location:
-                        formData.location.trim(),
-
-                    isOrganic:
-                        formData.isOrganic,
-
-                    isAvailable:
-                        true
-                },
+                data,
                 {
                     headers: {
                         Authorization:
@@ -516,11 +472,17 @@ const FarmerAddProduct = () => {
                 "Product published successfully!"
             );
 
+            // Release preview URLs
+            imagePreviews.forEach((preview) => {
+                URL.revokeObjectURL(preview);
+            });
+
             setTimeout(() => {
                 navigate(
                     "/farmer/dashboard"
                 );
             }, 1200);
+
         } catch (error) {
             console.error(
                 "ADD PRODUCT ERROR:",
@@ -537,8 +499,10 @@ const FarmerAddProduct = () => {
                 top: 0,
                 behavior: "smooth"
             });
+
         } finally {
             setSubmitting(false);
+            setUploadingImages(false);
         }
     };
 
@@ -687,9 +651,7 @@ const FarmerAddProduct = () => {
 
                     <div className="space-y-8">
 
-                        {/* ==================================
-                            PRODUCT INFORMATION
-                        ================================== */}
+                        {/* PRODUCT INFORMATION */}
 
                         <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
 
@@ -811,9 +773,7 @@ const FarmerAddProduct = () => {
                             </div>
                         </section>
 
-                        {/* ==================================
-                            PRICING
-                        ================================== */}
+                        {/* PRICING */}
 
                         <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
 
@@ -972,9 +932,7 @@ const FarmerAddProduct = () => {
                             </div>
                         </section>
 
-                        {/* ==================================
-                            DESCRIPTION + AI
-                        ================================== */}
+                        {/* DESCRIPTION + AI */}
 
                         <section className="rounded-3xl border border-violet-200 bg-white p-5 shadow-sm sm:p-7">
 
@@ -995,8 +953,6 @@ const FarmerAddProduct = () => {
                                 </div>
 
                             </div>
-
-                            {/* AI GENERATOR CARD */}
 
                             <div className="mb-5 overflow-hidden rounded-2xl border border-violet-200 bg-gradient-to-r from-violet-50 via-white to-emerald-50">
 
@@ -1062,8 +1018,6 @@ const FarmerAddProduct = () => {
 
                             </div>
 
-                            {/* DESCRIPTION TEXTAREA */}
-
                             <div>
 
                                 <div className="mb-2 flex items-center justify-between">
@@ -1108,9 +1062,7 @@ const FarmerAddProduct = () => {
 
                         </section>
 
-                        {/* ==================================
-                            IMAGE UPLOAD
-                        ================================== */}
+                        {/* IMAGE UPLOAD */}
 
                         <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
 
@@ -1393,9 +1345,7 @@ const FarmerAddProduct = () => {
                                                 className="animate-spin"
                                             />
 
-                                            {uploadingImages
-                                                ? "Uploading images..."
-                                                : "Publishing product..."}
+                                            Publishing product...
                                         </>
                                     ) : (
                                         <>
