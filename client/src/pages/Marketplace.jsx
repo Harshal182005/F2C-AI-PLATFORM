@@ -168,10 +168,7 @@ function Marketplace() {
                             className="group flex items-center gap-3"
                         >
                             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-green-600 text-white shadow-lg shadow-green-600/20 transition duration-300 group-hover:scale-105 group-hover:rotate-2">
-                                <Sprout
-                                    size={23}
-                                    strokeWidth={2.4}
-                                />
+                                <Sprout size={23} strokeWidth={2.4} />
                             </div>
 
                             <div className="text-left">
@@ -242,8 +239,7 @@ function Marketplace() {
                                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 font-bold text-green-700 ring-2 ring-white">
                                                 {user.name
                                                     ?.charAt(0)
-                                                    ?.toUpperCase() ||
-                                                    "U"}
+                                                    ?.toUpperCase() || "U"}
                                             </div>
 
                                             <div className="hidden text-left lg:block">
@@ -299,9 +295,7 @@ function Marketplace() {
                                                 </button>
 
                                                 <button
-                                                    onClick={
-                                                        handleLogout
-                                                    }
+                                                    onClick={handleLogout}
                                                     className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
                                                 >
                                                     <LogOut size={17} />
@@ -312,29 +306,12 @@ function Marketplace() {
                                     </details>
                                 </div>
                             ) : (
-                                <div className="hidden items-center gap-2 sm:flex">
-                                    <button
-                                        onClick={() =>
-                                            navigate(
-                                                "/farmer/login"
-                                            )
-                                        }
-                                        className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-2.5 text-sm font-bold text-green-700 transition hover:border-green-300 hover:bg-green-100"
-                                    >
-                                        <Sprout size={16} />
-                                        Farmer
-                                    </button>
-
-                                    <button
-                                        onClick={() =>
-                                            navigate("/login")
-                                        }
-                                        className="flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-green-600/20 transition hover:bg-green-700"
-                                    >
-                                        <ShoppingCart size={16} />
-                                        Customer
-                                    </button>
-                                </div>
+                                <button
+                                    onClick={() => navigate("/login")}
+                                    className="hidden rounded-xl bg-green-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-green-600/20 transition hover:bg-green-700 sm:block"
+                                >
+                                    Sign In
+                                </button>
                             )}
 
                             {/* MOBILE MENU */}
@@ -396,37 +373,15 @@ function Marketplace() {
                                 </button>
 
                                 {!user && (
-                                    <div className="mt-2 space-y-2">
-                                        <button
-                                            onClick={() => {
-                                                navigate(
-                                                    "/farmer/login"
-                                                );
-                                                setMobileMenuOpen(
-                                                    false
-                                                );
-                                            }}
-                                            className="flex w-full items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-700"
-                                        >
-                                            <Sprout size={18} />
-                                            Login as Farmer
-                                        </button>
-
-                                        <button
-                                            onClick={() => {
-                                                navigate("/login");
-                                                setMobileMenuOpen(
-                                                    false
-                                                );
-                                            }}
-                                            className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-bold text-white"
-                                        >
-                                            <ShoppingCart
-                                                size={18}
-                                            />
-                                            Login as Customer
-                                        </button>
-                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            navigate("/login");
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        className="mt-2 flex w-full items-center justify-center rounded-xl bg-green-600 px-4 py-3 text-sm font-bold text-white"
+                                    >
+                                        Sign In
+                                    </button>
                                 )}
 
                                 {user && (
@@ -726,9 +681,7 @@ function Marketplace() {
                             <button
                                 key={category}
                                 onClick={() =>
-                                    handleCategoryChange(
-                                        category
-                                    )
+                                    handleCategoryChange(category)
                                 }
                                 className={`flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition ${
                                     isActive
@@ -742,10 +695,9 @@ function Marketplace() {
 
                                 {category}
 
-                                {isActive &&
-                                    category !== "All" && (
-                                        <CheckCircle2 size={14} />
-                                    )}
+                                {isActive && category !== "All" && (
+                                    <CheckCircle2 size={14} />
+                                )}
                             </button>
                         );
                     })}
