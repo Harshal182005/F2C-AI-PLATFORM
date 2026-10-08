@@ -17,7 +17,7 @@ const generateToken = (user) => {
 
 
 // =========================
-// REGISTER CUSTOMER
+// REGISTER CUSTOMER / FARMER
 // =========================
 
 export const registerUser = async (req, res) => {
@@ -27,7 +27,8 @@ export const registerUser = async (req, res) => {
             email,
             password,
             phone,
-            address
+            address,
+            role
         } = req.body;
 
         if (!name || !email || !password) {
@@ -45,6 +46,12 @@ export const registerUser = async (req, res) => {
                 message: "Password must be at least 6 characters long"
             });
         }
+
+        // Only customer and farmer registration is allowed here
+        const userRole =
+            role === "farmer"
+                ? "farmer"
+                : "customer";
 
         const existingUser = await User.findOne({
             email: normalizedEmail
@@ -66,7 +73,7 @@ export const registerUser = async (req, res) => {
             name: name.trim(),
             email: normalizedEmail,
             password: hashedPassword,
-            role: "customer",
+            role: userRole,
             phone: phone?.trim(),
             address: address?.trim()
         });
@@ -87,7 +94,7 @@ export const registerUser = async (req, res) => {
 
     } catch (error) {
         console.error(
-            "CUSTOMER REGISTER ERROR:",
+            "REGISTER ERROR:",
             error
         );
 
