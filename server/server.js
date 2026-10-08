@@ -31,6 +31,9 @@ import errorMiddleware from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 
+const FRONTEND_URL =
+    process.env.FRONTEND_URL || "http://localhost:5173";
+
 const app = express();
 
 
@@ -47,7 +50,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: FRONTEND_URL,
         methods: ["GET", "POST", "PUT", "DELETE"]
     }
 });
@@ -61,7 +64,7 @@ initializeSocket(io);
 
 app.use(
     cors({
-        origin: "http://localhost:5173"
+        origin: FRONTEND_URL
     })
 );
 
@@ -180,7 +183,7 @@ const startServer = async () => {
 
         await connectDB();
 
-        httpServer.listen(PORT, () => {
+        httpServer.listen(PORT, "0.0.0.0", () => {
 
             console.log(
                 `Server running on port ${PORT}`
